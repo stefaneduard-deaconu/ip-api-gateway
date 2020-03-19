@@ -1,1 +1,2 @@
 FLASK_APP=api_gateway.py
+FLASK_CONFIG=heroku
