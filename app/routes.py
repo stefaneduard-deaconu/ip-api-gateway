@@ -3,30 +3,33 @@ from app import app
 import requests
 
 
+ACCOUNT_ROOT = "http://ip-account-service.herokuapp.com/"
+
+
 @app.route('/user', methods=["POST", "PUT", "DELETE"])
 def user():
     if request.method == 'POST':
         data = request.get_json()
-        response = requests.post("http://ip-account-service.herokuapp.com/user", json=data)
+        response = requests.post(ACCOUNT_ROOT + "user", json=data)
         if response['error'] is True:
             return jsonify(error=True)
         return jsonify(authToken=response['authToken'], error=False)
 
     if request.method == 'PUT':
         data = request.get_json()
-        response = requests.put("http://ip-account-service.herokuapp.com/user", json=data)
+        response = requests.put(ACCOUNT_ROOT + "user", json=data)
         return jsonify(error=response['error'])
 
     if request.method == 'DELETE':
         data = request.get_json()
-        response = requests.delete("http://ip-account-service.herokuapp.com/user", json=data)
+        response = requests.delete(ACCOUNT_ROOT + "user", json=data)
         return jsonify(error=response['error'])
 
 
 @app.route('/auth', methods=["POST"])
 def auth():
     data = request.get_json()
-    response = requests.post("http://ip-account-service.herokuapp.com/auth", json=data)
+    response = requests.post(ACCOUNT_ROOT + "auth", json=data)
     if response['error'] is True:
         return jsonify(error=True)
     return jsonify(authToken=response['authToken'], error=False)
@@ -38,7 +41,7 @@ def docs():
         data = request.get_json()
         authToken = data['authToken']
         docs = data['docs']
-        response = requests.post("http://ip-account-service.herokuapp.com/user", json={'authToken': authToken})
+        response = requests.post(ACCOUNT_ROOT + "user", json={'authToken': authToken})
         if response['error'] is True:
             return jsonify(error=True)
         userId = response['userId']
@@ -48,7 +51,7 @@ def docs():
     if request.method == 'DELETE':
         data = request.get_json()
         authToken = data['authToken']
-        response = requests.post("http://ip-account-service.herokuapp.com/user", json={'authToken': authToken})
+        response = requests.post(ACCOUNT_ROOT + "user", json={'authToken': authToken})
         if response['error'] is True:
             return jsonify(error=True)
         userId = response['userId']
@@ -62,7 +65,7 @@ def doc():
         data = request.get_json()
         authToken = data['authToken']
         doc = data['doc']
-        response = requests.post("http://ip-account-service.herokuapp.com/user", json={'authToken': authToken})
+        response = requests.post(ACCOUNT_ROOT + "user", json={'authToken': authToken})
         if response['error'] is True:
             return jsonify(error=True)
         userId = response['userId']
@@ -75,7 +78,7 @@ def doc():
         data = request.get_json()
         authToken = data['authToken']
         doc = data['doc']
-        response = requests.post("http://ip-account-service.herokuapp.com/user", json={'authToken': authToken})
+        response = requests.post(ACCOUNT_ROOT + "user", json={'authToken': authToken})
         if response['error'] is True:
             return jsonify(error=True)
         userId = response['userId']
@@ -86,7 +89,7 @@ def doc():
         data = request.get_json()
         authToken = data['authToken']
         doc_id = data['doc_id']
-        response = requests.post("http://ip-account-service.herokuapp.com/user", json={'authToken': authToken})
+        response = requests.post(ACCOUNT_ROOT + "user", json={'authToken': authToken})
         if response['error'] is True:
             return jsonify(error=True)
         userId = response['userId']
