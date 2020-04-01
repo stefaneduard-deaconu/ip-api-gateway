@@ -6,6 +6,7 @@ import json
 
 # ACCOUNT_ROOT = "http://ip-account-service.herokuapp.com/"
 ACCOUNT_ROOT = "http://0.0.0.0:8081/"
+TEXT_ROOT = "http://0.0.0.0:8082/"
 
 
 @app.route('/user', methods=["GET", "POST", "PUT", "DELETE"])
@@ -49,63 +50,86 @@ def auth():
 
 
 @app.route('/docs', methods=["POST", "DELETE"])
-def docs():
+def docs_route():
     if request.method == 'POST':
         data = request.get_json()
         authToken = data['authToken']
-        docs = data['docs']
-        response = requests.post(ACCOUNT_ROOT + "user", json={'authToken': authToken})
-        if response['error'] is True:
+        docs = data.get('docs')
+        response_json = requests.get(
+            ACCOUNT_ROOT + "user_id", json={'authToken': authToken}
+        ).json()
+        if response_json.get('error'):
             return jsonify(error=True)
-        userId = response['userId']
-        response = requests.post("http://ip-text-service.herokuapp.com/docs", json={'userId': userId, 'docs': docs})
-        return jsonify(error=response['error'])
+        user_id = response_json.get('userId')
+        response = requests.post(
+            TEXT_ROOT + "docs",
+            json={'userId': user_id, 'docs': docs}
+        )
+        return response.text
+        return jsonify(error=response.json().get('error'))
 
     if request.method == 'DELETE':
         data = request.get_json()
-        authToken = data['authToken']
-        response = requests.post(ACCOUNT_ROOT + "user", json={'authToken': authToken})
-        if response['error'] is True:
+        authToken = data.get('authToken')
+        response_json = requests.get(
+            ACCOUNT_ROOT + "user_id", json={'authToken': authToken}
+        ).json()
+        if response_json.get('error'):
             return jsonify(error=True)
-        userId = response['userId']
-        response = requests.delete("http://ip-text-service.herokuapp.com/docs", json={'userId': userId})
-        return jsonify(error=response['error'])
+        userId = response_json.get('userId')
+        response_json = requests.delete(TEXT_ROOT + "docs", json={'userId': userId}).json()
+        return jsonify(error=response_json.get('error'))
 
 
 @app.route('/doc', methods=["POST", "PUT", "DELETE"])
 def doc():
     if request.method == 'POST':
         data = request.get_json()
-        authToken = data['authToken']
-        doc = data['doc']
-        response = requests.post(ACCOUNT_ROOT + "user", json={'authToken': authToken})
-        if response['error'] is True:
-            return jsonify(error=True)
-        userId = response['userId']
-        response = requests.post("http://ip-text-service.herokuapp.com/doc", json={'userId': userId, 'doc': doc})
-        if response['error'] is True:
-            return jsonify(error=True)
-        return jsonify(doc_id=response['doc_id'], error=False)
+        authToken = data.get('authToken')
+        doc = data.get('doc')
+        response_json = requests.get(
+            ACCOUNT_ROOT + "user_id", json={'authToken': authToken}
+        ).json()
+        if response_json.get('error') is True:
+            return jsonify(error="true")
+        userId = response_json.get('userId')
+        response = requests.post(
+            TEXT_ROOT + "docs/" + userId,
+            json={'userId': userId, 'doc': doc}
+        ).json()
+        # forward it:
+        return jsonify(error=response.get('error'))
 
     if request.method == 'PUT':
         data = request.get_json()
-        authToken = data['authToken']
-        doc = data['doc']
-        response = requests.post(ACCOUNT_ROOT + "user", json={'authToken': authToken})
-        if response['error'] is True:
-            return jsonify(error=True)
-        userId = response['userId']
-        response = requests.put("http://ip-text-service.herokuapp.com/doc", json={'userId': userId, 'doc': doc})
-        return jsonify(error=response['error'])
+        authToken = data.get('authToken')
+        doc = data.get('doc')
+        response_json = requests.get(
+            ACCOUNT_ROOT + "user_id", json={'authToken': authToken}
+        ).json()
+        if response_json.get('error'):
+            return jsonify(error="true")
+        userId = response_json.get('userId')
+        response = requests.put(
+            TEXT_ROOT + "docs/" + userId,
+            json={'userId': userId, 'doc': doc}
+        ).json()
+        # forward it:
+        return jsonify(error=response.get('error'))
 
     if request.method == 'DELETE':
         data = request.get_json()
-        authToken = data['authToken']
-        doc_id = data['doc_id']
-        response = requests.post(ACCOUNT_ROOT + "user", json={'authToken': authToken})
-        if response['error'] is True:
-            return jsonify(error=True)
-        userId = response['userId']
-        response = requests.delete("http://ip-text-service.herokuapp.com/doc",
-                                   json={'userId': userId, 'doc_id': doc_id})
-        return jsonify(error=response['error'])
+        authToken = data.get('authToken')
+        doc_id = data.get('docId')
+        response = requests.get(
+            ACCOUNT_ROOT + "user_id",
+            json={'authToken': authToken}
+        ).json()
+        if response.get('error'):
+            return jsonify(error="true")
+        userId = response.get('userId')
+        response = requests.delete(
+            TEXT_ROOT + "docs/" + userId,
+            json={'docId': doc_id}
+        ).json()
+        return jsonify(error=response.get('error'))

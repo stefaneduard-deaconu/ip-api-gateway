@@ -1,3 +1,4 @@
+requests
 asn1crypto==0.24.0
 beautifulsoup4==4.6.0
 cffi==1.14.0
