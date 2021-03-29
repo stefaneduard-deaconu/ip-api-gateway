@@ -33,7 +33,7 @@ Pillow==5.1.0
 pycparser==2.20
 pycrypto==2.6.1
 pygame==1.9.6
-Pygments==2.2.0
+Pygments==2.7.4
 pyOpenSSL==17.5.0
 pyparsing==2.2.0
 python-dateutil==2.6.1
